@@ -2,45 +2,40 @@ import requests
 from flask import Flask, jsonify
 
 app = Flask(__name__)
-
-@app.route('/<asal>/<tujuan>')
+#route untuk request
+@app.route('/sekalitrip/<asal>/<tujuan>')
 def info_transport(asal, tujuan):
-    #asal = input('Masukkan alamat asal :')
-    #tujuan = input('Masukkan alamat tujuan :')
+    #proses ubah format nama asal da tujuan agar dapat mengakses api map
     Asal = asal.replace(' ','+').replace(',','%2C')
     Tujuan = tujuan.replace(' ','+').replace(',','%2C')
     endpoint='https://www.mapquestapi.com/directions/v2/route?key=E9TT6Iq8q1SrxjXz3Tu9lqFW1RCBjP6V&from='+Asal+'&to='+Tujuan+'&outFormat=json&ambiguities=ignore&routeType=fastest&doReverseGeocode=false&enhancedNarrative=false&avoidTimedConditions=false'
-
+    
+    #proses request data dari api
     req = requests.get(endpoint)
     data = req.json()
+    #proses pencarian jarak dari data yang diperoleh dalam km
     distance = data['route']['distance']
+    #proses penghitungan harga dari jarak yang diperoleh
     if distance <= 1:
-        hargaa = 8000
-        hargab = 10000
-        hargac = 6500
+        hargaojol = 8000
+        hargataxiol = 10000
+        hargabluebird = 6500
     elif distance <= 2:
-        hargaa = 8000
-        hargab = 10000
-        hargac = ((distance - 1)*4100)+6500
+        hargaojol = 8000
+        hargataxiol = 10000
+        hargabluebird = ((distance - 1)*4100)+6500
     else :
-        hargaa = ((distance - 2)*1500)+8000
-        hargab = ((distance - 2)*3500)+10000
-        hargac = ((distance - 1)*4100)+6500
-    print('Hasil :')
-    print('Jarak',distance,'Kilometer')
-    print('Harga menggunakan ojek online :',hargaa,'Rupiah')
-    print('Harga menggunakan taxi online :',hargab,'Rupiah')
-    print('Harga menggunakan taxi bluebird :',hargac,'Rupiah')
-
+        hargaojol = ((distance - 2)*1500)+8000
+        hargataxiol = ((distance - 2)*3500)+10000
+        hargabluebird = ((distance - 1)*4100)+6500
+    
     data_final = {
         'jarak' : distance,
-        'mata_uang' : 'rupiah',
-        'harga_ojek_online' : hargaa,
-        'harga_taxi_online' : hargab,
-        'harga_taxi_bluebird' : hargac
+        'harga_ojek_online' : hargaojol,
+        'harga_taxi_online' : hargataxiol,
+        'harga_taxi_bluebird' : hargabluebird
     }
     return jsonify(data_final)
 
 if __name__ == '__main__':
-    #app.run(ssl_context = ('cert.pem', 'key.pem'))
     app.run(debug = True)
