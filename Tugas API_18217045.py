@@ -3,7 +3,7 @@ from flask import Flask, jsonify
 
 app = Flask(__name__)
 #route untuk request
-@app.route('/sekalitrip/<asal>/<tujuan>')
+@app.route('/<asal>/<tujuan>')
 def info_transport(asal, tujuan):
     #proses ubah format nama asal da tujuan agar dapat mengakses api map
     Asal = asal.replace(' ','+').replace(',','%2C')
@@ -30,12 +30,12 @@ def info_transport(asal, tujuan):
         hargabluebird = ((distance - 1)*4100)+6500
     
     data_final = {
-        'jarak' : distance,
-        'harga_ojek_online' : hargaojol,
-        'harga_taxi_online' : hargataxiol,
-        'harga_taxi_bluebird' : hargabluebird
+        distance : 'jarak',
+        hargaojol : 'harga_ojek_online' ,
+        hargataxiol : 'harga_taxi_online' ,
+        hargabluebird : 'harga_taxi_bluebird' 
     }
     return jsonify(data_final)
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(debug = True, port = 5020)
